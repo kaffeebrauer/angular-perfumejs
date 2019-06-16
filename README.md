@@ -1,0 +1,1 @@
+experimentation using Angular 8, Perfume.js (for web performance monitoring) and perhaps Microsoft Azure App Insights
