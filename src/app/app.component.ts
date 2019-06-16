@@ -6,6 +6,8 @@ import {
 } from 'perfume.js/angular';
 import { from, of } from 'rxjs';
 import { delay } from "rxjs/operators";
+//import { AppInsightsService } from '@markpieszak/ng-application-insights';
+import { AppInsightsService } from './services/app-insights.service';
 
 @Component({
   selector: 'app-root',
@@ -22,8 +24,9 @@ export class AppComponent implements AfterViewInit {
    * Default constructor for app component
    */
   constructor(
-    public perfume: NgPerfume,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private perfume: NgPerfume,
+    private appInsightsService: AppInsightsService
   ) {
     this.perfume.start('AppComponentAfterPaint');
   }
@@ -46,10 +49,16 @@ export class AppComponent implements AfterViewInit {
       () => {
         // End measure component time to paint
         this.componentInitialised = true;
-        this.perfume.endPaint('AppComponentAfterPaint');
         this.changeDetectorRef.markForCheck();
       }
     );
+
+    const fcp = await this.perfume.observeFirstContentfulPaint;
+    const fid = await this.perfume.observeFirstContentfulPaint;
+
+    this.appInsightsService.logEvent('PerfumeJs-App FCP', 'duration', fcp.toString());
+    this.appInsightsService.logEvent('PerfumeJs-App FID', 'duration', fid.toString());
+
   }
 }
 
